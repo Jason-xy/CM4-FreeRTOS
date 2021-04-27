@@ -1,0 +1,13 @@
+..\obj\main.o: main.c
+..\obj\main.o: ..\SYSTEM\sys\sys.h
+..\obj\main.o: ..\CORE\stm32f4xx.h
+..\obj\main.o: ..\CORE\stm32f411xe.h
+..\obj\main.o: ..\CORE\core_cm4.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\main.o: ..\CORE\core_cmInstr.h
+..\obj\main.o: ..\CORE\cmsis_armcc.h
+..\obj\main.o: ..\CORE\core_cmFunc.h
+..\obj\main.o: ..\CORE\core_cmSimd.h
+..\obj\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
+..\obj\main.o: ..\HARDWARE\LED\led.h
+..\obj\main.o: ..\SYSTEM\delay\delay.h
