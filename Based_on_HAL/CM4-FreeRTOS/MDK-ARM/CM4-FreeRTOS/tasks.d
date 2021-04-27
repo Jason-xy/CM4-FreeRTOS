@@ -1,0 +1,16 @@
+cm4-freertos\tasks.o: ..\FreeRTOS\tasks.c
+cm4-freertos\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+cm4-freertos\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\FreeRTOS.h
+cm4-freertos\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+cm4-freertos\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\FreeRTOSConfig.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\projdefs.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\portable.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\deprecated_definitions.h
+cm4-freertos\tasks.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\mpu_wrappers.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\task.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\list.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\timers.h
+cm4-freertos\tasks.o: ..\FreeRTOS\include\stack_macros.h
