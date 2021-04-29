@@ -1,1 +1,12 @@
-./objects/main.o: ..\Core\main.c
+.\objects\main.o: ..\Core\main.c
+.\objects\main.o: ..\FreeRTOS\include\FreeRTOS.h
+.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\main.o: ..\FreeRTOS\include\FreeRTOSConfig.h
+.\objects\main.o: ..\FreeRTOS\include\projdefs.h
+.\objects\main.o: ..\FreeRTOS\include\portable.h
+.\objects\main.o: ..\FreeRTOS\include\deprecated_definitions.h
+.\objects\main.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+.\objects\main.o: ..\FreeRTOS\include\mpu_wrappers.h
+.\objects\main.o: ..\FreeRTOS\include\task.h
+.\objects\main.o: ..\FreeRTOS\include\list.h

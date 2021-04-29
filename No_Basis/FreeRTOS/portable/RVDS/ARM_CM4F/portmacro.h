@@ -46,6 +46,7 @@
  */
 
 /* Type definitions. */
+	#define uint32_t		unsigned int
     #define portCHAR          char
     #define portFLOAT         float
     #define portDOUBLE        double

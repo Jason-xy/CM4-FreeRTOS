@@ -59,6 +59,8 @@
 #define configENABLE_FPU                         1
 #define configENABLE_MPU                         0
 
+#define SystemCoreClock							 100000000
+
 #define configUSE_PREEMPTION                     1
 #define configSUPPORT_STATIC_ALLOCATION          0
 #define configSUPPORT_DYNAMIC_ALLOCATION         1

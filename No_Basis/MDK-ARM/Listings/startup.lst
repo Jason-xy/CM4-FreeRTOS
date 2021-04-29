@@ -1,0 +1,1075 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000 00000400 
+                       Stack_Size
+                               EQU              0x00000400  ;定义主栈大小
+                                                            
+    2 00000000 00000200 
+                       Heap_Size
+                               EQU              0x00000200  ;定义堆大小
+    3 00000000 40023800 
+                       RCC_BASE
+                               EQU              0x40023800  ;RCC寄存器基址
+                                                            
+    4 00000000 40007000 
+                       PWR_BASE
+                               EQU              0x40007000  ;PWR寄存器基地
+                                                            址
+    5 00000000 40023C00 
+                       FLASH   EQU              0x40023C00  ;FLASH寄存器基�
+                                                            ��址
+    6 00000000 40020800 
+                       GPIOC_BASE
+                               EQU              0x40020800  ;GPIOC寄存器基�
+                                                            ��址
+    7 00000000 E000ED0C 
+                       SCB_AIRCR
+                               EQU              0xE000ED0C  ;中断控制寄存
+                                                            器
+    8 00000000 E000ED18 
+                       SCB_SHC EQU              0xE000ED18  ;系统中断寄存
+                                                            器
+    9 00000000 E000E100 
+                       NVIC_ISER0
+                               EQU              0xE000E100  ;中断使能寄存
+                                                            器
+   10 00000000         
+   11 00000000                 EXPORT           GPIOC_BASE
+   12 00000000         
+   13 00000000         ;开辟栈空间
+   14 00000000                 AREA             STACK, NOINIT, READWRITE, ALIGN
+=3 
+                                                            ;定义栈空间，
+                                                            不初始化（全0
+                                                            ），可读可写�
+                                                            ��八字节对齐
+   15 00000000         Stack_Mem
+                               SPACE            Stack_Size
+   16 00000400         __initial_sp
+   17 00000400         
+   18 00000400         ;开辟堆空间
+   19 00000400                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
+3 
+                                                            ;定义堆空间，
+                                                            不初始化（全0
+                                                            ），可读可写�
+                                                            ��八字节对齐
+   20 00000000         __heap_base
+   21 00000000         Heap_Mem
+                               SPACE            Heap_Size
+   22 00000200         __heap_limit
+   23 00000200         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   24 00000200                 PRESERVE8                    ;指示编译器8�
+                                                            �节对齐
+   25 00000200                 THUMB                        ;指示编译器以
+                                                            后的指令为THUM
+                                                            B指令
+   26 00000200         
+   27 00000200                 AREA             RESET, CODE, READONLY ;定义�
+                                                            �读数据段，标
+                                                            记为RESET，其�
+                                                            �放在CODE区，�
+                                                            �于0地址
+   28 00000000                 EXPORT           __Vectors   ;在程序中声明
+                                                            一个全局的标�
+                                                            ��__Vectors，该�
+                                                            �号可在其他的
+                                                            文件中引用
+   29 00000000                 EXPORT           __Vectors_End
+   30 00000000                 EXPORT           __Vectors_Size
+   31 00000000 00000000 
+                       __Vectors
+                               DCD              __initial_sp ;当前地址写�
+                                                            �一个字(32bit)�
+                                                            �据，值为0x0000
+                                                            0000，实际是应
+                                                            该填入栈顶地�
+                                                            �� 
+   32 00000004 00000000        DCD              Reset_Handler ;当前地址写�
+                                                            ��一个字(32bit)�
+                                                            ��据，值为Reset
+                                                            _Handler的值，�
+                                                            �程序入口地址
+                                                            
+   33 00000008 00000000        DCD              0           ; NMI Handler
+   34 0000000C 00000000        DCD              0           ; Hard Fault Handle
+                                                            r
+   35 00000010 00000000        DCD              0           ; MPU Fault Handler
+                                                            
+   36 00000014 00000000        DCD              0           ; Bus Fault Handler
+                                                            
+   37 00000018 00000000        DCD              0           ; Usage Fault Handl
+                                                            er
+   38 0000001C 00000000        DCD              0           ; Reserved
+   39 00000020 00000000        DCD              0           ; Reserved
+   40 00000024 00000000        DCD              0           ; Reserved
+   41 00000028 00000000        DCD              0           ; Reserved
+   42 0000002C 00000000        DCD              SVC_Handler ; SVCall Handler
+   43 00000030 00000000        DCD              0           ; Debug Monitor Han
+                                                            dler
+   44 00000034 00000000        DCD              0           ; Reserved
+   45 00000038 00000000        DCD              PendSV_Handler ; PendSV Handler
+                                                            
+   46 0000003C 00000000        DCD              SysTick_Handler 
+                                                            ; SysTick Handler
+   47 00000040         
+   48 00000040         ;外部中断向量表
+   49 00000040 00000000        DCD              0           ; Window WatchDog  
+                                                                               
+                                                                               
+                                                            
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   50 00000044 00000000        DCD              0           ; PVD through EXTI 
+                                                            Line detection     
+                                                                               
+                                                            
+   51 00000048 00000000        DCD              0           ; Tamper and TimeSt
+                                                            amps through the EX
+                                                            TI line            
+                                                            
+   52 0000004C 00000000        DCD              0           ; RTC Wakeup throug
+                                                            h the EXTI line    
+                                                                               
+                                                            
+   53 00000050 00000000        DCD              0           ; FLASH            
+                                                                               
+                                                                        
+   54 00000054 00000000        DCD              0           ; RCC              
+                                                                               
+                                                                        
+   55 00000058 00000000        DCD              0           ; EXTI Line0       
+                                                                               
+                                                                               
+                                                            
+   56 0000005C 00000000        DCD              0           ; EXTI Line1       
+                                                                               
+                                                                               
+                                                            
+   57 00000060 00000000        DCD              0           ; EXTI Line2       
+                                                                               
+                                                                               
+                                                            
+   58 00000064 00000000        DCD              0           ; EXTI Line3       
+                                                                               
+                                                                               
+                                                            
+   59 00000068 00000000        DCD              0           ; EXTI Line4       
+                                                                               
+                                                                               
+                                                            
+   60 0000006C 00000000        DCD              0           ; DMA1 Stream 0    
+                                                                               
+                                                                        
+   61 00000070 00000000        DCD              0           ; DMA1 Stream 1    
+                                                                               
+                                                                        
+   62 00000074 00000000        DCD              0           ; DMA1 Stream 2    
+                                                                               
+                                                                        
+   63 00000078 00000000        DCD              0           ; DMA1 Stream 3    
+                                                                               
+                                                                        
+   64 0000007C 00000000        DCD              0           ; DMA1 Stream 4    
+                                                                               
+                                                                        
+   65 00000080 00000000        DCD              0           ; DMA1 Stream 5    
+                                                                               
+                                                                        
+   66 00000084 00000000        DCD              0           ; DMA1 Stream 6    
+                                                                               
+                                                                        
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+   67 00000088 00000000        DCD              0           ; ADC1, ADC2 and AD
+                                                            C3s                
+                                                                        
+   68 0000008C 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                               
+                                                             
+   69 00000090 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                               
+                                                            
+   70 00000094 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                             
+   71 00000098 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                               
+                                                            
+   72 0000009C 00000000        DCD              0           ; External Line[9:5
+                                                            ]s                 
+                                                                               
+                                                            
+   73 000000A0 00000000        DCD              0           ; TIM1 Break and TI
+                                                            M9                 
+                                                              
+   74 000000A4 00000000        DCD              0           ; TIM1 Update and T
+                                                            IM10               
+                                                              
+   75 000000A8 00000000        DCD              0           ; TIM1 Trigger and 
+                                                            Commutation and TIM
+                                                            11
+   76 000000AC 00000000        DCD              0           ; TIM1 Capture Comp
+                                                            are                
+                                                                               
+                                                            
+   77 000000B0 00000000        DCD              0           ; TIM2             
+                                                                               
+                                                                        
+   78 000000B4 00000000        DCD              0           ; TIM3             
+                                                                               
+                                                                        
+   79 000000B8 00000000        DCD              0           ; TIM4             
+                                                                               
+                                                                        
+   80 000000BC 00000000        DCD              0           ; I2C1 Event       
+                                                                               
+                                                                               
+                                                            
+   81 000000C0 00000000        DCD              0           ; I2C1 Error       
+                                                                               
+                                                                               
+                                                            
+   82 000000C4 00000000        DCD              0           ; I2C2 Event       
+                                                                               
+                                                                               
+                                                            
+   83 000000C8 00000000        DCD              0           ; I2C2 Error       
+                                                                               
+                                                                               
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+                                                              
+   84 000000CC 00000000        DCD              0           ; SPI1             
+                                                                               
+                                                                        
+   85 000000D0 00000000        DCD              0           ; SPI2             
+                                                                               
+                                                                        
+   86 000000D4 00000000        DCD              0           ; USART1           
+                                                                               
+                                                                        
+   87 000000D8 00000000        DCD              0           ; USART2           
+                                                                               
+                                                                        
+   88 000000DC 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                          
+   89 000000E0 00000000        DCD              0           ; External Line[15:
+                                                            10]s               
+                                                                               
+                                                            
+   90 000000E4 00000000        DCD              0           ; RTC Alarm (A and 
+                                                            B) through EXTI Lin
+                                                            e                  
+                                                            
+   91 000000E8 00000000        DCD              0           ; USB OTG FS Wakeup
+                                                             through EXTI line 
+                                                                               
+                                                                
+   92 000000EC 00000000        DCD              0           ; Reserved         
+                                                                     
+   93 000000F0 00000000        DCD              0           ; Reserved         
+                                                                    
+   94 000000F4 00000000        DCD              0           ; Reserved
+   95 000000F8 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                   
+   96 000000FC 00000000        DCD              0           ; DMA1 Stream7     
+                                                                               
+                                                                               
+                                                            
+   97 00000100 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                             
+   98 00000104 00000000        DCD              0           ; SDIO             
+                                                                               
+                                                                        
+   99 00000108 00000000        DCD              0           ; TIM5             
+                                                                               
+                                                                        
+  100 0000010C 00000000        DCD              0           ; SPI3             
+                                                                               
+                                                                        
+  101 00000110 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                           
+  102 00000114 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                           
+  103 00000118 00000000        DCD              0           ; Reserved         
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+                                                                      
+  104 0000011C 00000000        DCD              0           ; Reserved         
+                                                                      
+  105 00000120 00000000        DCD              0           ; DMA2 Stream 0    
+                                                                               
+                                                                        
+  106 00000124 00000000        DCD              0           ; DMA2 Stream 1    
+                                                                               
+                                                                        
+  107 00000128 00000000        DCD              0           ; DMA2 Stream 2    
+                                                                               
+                                                                        
+  108 0000012C 00000000        DCD              0           ; DMA2 Stream 3    
+                                                                               
+                                                                        
+  109 00000130 00000000        DCD              0           ; DMA2 Stream 4
+  110 00000134 00000000        DCD              0           ; Reserved  
+  111 00000138 00000000        DCD              0           ; Reserved  
+  112 0000013C 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                              
+  113 00000140 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                               
+                                                            
+  114 00000144 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                               
+                                                            
+  115 00000148 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                               
+                                                            
+  116 0000014C 00000000        DCD              0           ; USB OTG FS       
+                                                                               
+                                                                        
+  117 00000150 00000000        DCD              0           ; DMA2 Stream 5    
+                                                                               
+                                                                        
+  118 00000154 00000000        DCD              0           ; DMA2 Stream 6    
+                                                                               
+                                                                        
+  119 00000158 00000000        DCD              0           ; DMA2 Stream 7    
+                                                                               
+                                                                        
+  120 0000015C 00000000        DCD              0           ; USART6           
+                                                                               
+                                                                         
+  121 00000160 00000000        DCD              0           ; I2C3 event       
+                                                                               
+                                                                               
+                                                            
+  122 00000164 00000000        DCD              0           ; I2C3 error       
+                                                                               
+                                                                               
+                                                            
+  123 00000168 00000000        DCD              0           ; Reserved         
+                                                                        
+  124 0000016C 00000000        DCD              0           ; Reserved         
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+                                                                          
+  125 00000170 00000000        DCD              0           ; Reserved         
+                                                                            
+  126 00000174 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                    
+  127 00000178 00000000        DCD              0           ; Reserved  
+  128 0000017C 00000000        DCD              0           ; Reserved         
+                                                                               
+                                                                  
+  129 00000180 00000000        DCD              0           ; Reserved
+  130 00000184 00000000        DCD              0           ; FPU
+  131 00000188 00000000        DCD              0           ; Reserved
+  132 0000018C 00000000        DCD              0           ; Reserved
+  133 00000190 00000000        DCD              0           ; SPI4
+  134 00000194 00000000        DCD              0           ; SPI5
+  135 00000198         __Vectors_End
+  136 00000198 00000198 
+                       __Vectors_Size
+                               EQU              __Vectors_End - __Vectors
+  137 00000198         
+  138 00000198                 AREA             |.text|, CODE, READONLY ;定义
+                                                            代码段，标记�
+                                                            ��.text
+  139 00000000                 ENTRY
+  140 00000000         ;复位中断服务函数
+  141 00000000         Reset_Handler
+                               PROC
+  142 00000000                 EXPORT           Reset_Handler             [WEAK
+]
+  143 00000000                 IMPORT           __main
+  144 00000000 4872            LDR              R0, =0xE000ED88 ; 使能浮点�
+                                                            ��算 CP10,CP11
+  145 00000002 6801            LDR              R1,[R0]
+  146 00000004 F441 0170       ORR              R1,R1,#(0xF << 20)
+  147 00000008 6001            STR              R1,[R0]
+  148 0000000A F7FF FFFE       BL               SysTickConfig
+  149 0000000E F7FF FFFE       BL               GPIOConfig
+  150 00000012 486F            LDR              R0, =__main
+  151 00000014 4700            BX               R0
+  152 00000016                 ENDP
+  153 00000016         
+  154 00000016         SVC_Handler
+                               PROC
+  155 00000016                 EXPORT           SVC_Handler                [WEA
+K]
+  156 00000016 E7FE            B                .
+  157 00000018                 ENDP
+  158 00000018         PendSV_Handler
+                               PROC
+  159 00000018                 EXPORT           PendSV_Handler             [WEA
+K]
+  160 00000018 E7FE            B                .
+  161 0000001A                 ENDP
+  162 0000001A         SysTick_Handler
+                               PROC
+  163 0000001A                 EXPORT           SysTick_Handler            [WEA
+K]
+  164 0000001A E7FE            B                .
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+  165 0000001C                 ENDP
+  166 0000001C         
+  167 0000001C                 EXPORT           __initial_sp
+  168 0000001C                 EXPORT           __heap_base
+  169 0000001C                 EXPORT           __heap_limit
+  170 0000001C         
+  171 0000001C         ;时钟初始化，提供100MHz SysTick
+  172 0000001C         SysTickConfig
+                               PROC
+  173 0000001C B672            CPSID            I           ;关中断
+  174 0000001E         
+  175 0000001E         ;RCC->CR|=0x00000001    设置HISON,开启内部高速RC
+                       振荡
+  176 0000001E 486D            LDR              R0, =RCC_BASE
+  177 00000020 F100 0000       ADD              R0, R0, #0x00 ;定位RCC_CR
+  178 00000024 6801            LDR              R1, [R0]
+  179 00000026 F041 0101       ORR              R1, R1, #0x01
+  180 0000002A 6001            STR              R1, [R0]
+  181 0000002C         
+  182 0000002C         ;RCC->CFGR=0x00000000   CFGR清零
+  183 0000002C 4869            LDR              R0, =RCC_BASE
+  184 0000002E F100 0008       ADD              R0, R0, #0x08 ;定位RCC_CFGR
+  185 00000032 F04F 0100       MOV              R1, #0x00
+  186 00000036 6001            STR              R1, [R0]
+  187 00000038         
+  188 00000038         ;RCC->CR&=0xFEF6FFFF    HSEON,CSSON,PLLON清零
+  189 00000038 4866            LDR              R0, =RCC_BASE
+  190 0000003A F100 0000       ADD              R0, R0, #0x00 ;定位RCC_CR
+  191 0000003E 6801            LDR              R1, [R0]
+  192 00000040 F04F 0200       MOV              R2, #0
+  193 00000044 F102 427E       ADD              R2, R2, #0xFE000000
+  194 00000048 F502 0276       ADD              R2, R2, #0xF60000
+  195 0000004C F502 427F       ADD              R2, R2, #0xFF00
+  196 00000050 F102 02FF       ADD              R2, R2, #0xFF
+  197 00000054 EA01 0102       AND              R1, R1, R2
+  198 00000058 6001            STR              R1, [R0]
+  199 0000005A         
+  200 0000005A         ;RCC->PLLCFGR=0x24003010    PLLCFGR恢复复位值
+  201 0000005A 485E            LDR              R0, =RCC_BASE
+  202 0000005C F100 0004       ADD              R0, R0, #0x04 
+                                                            ;定位RCC_PLLCFGR
+  203 00000060 F04F 5110       MOV              R1, #0x24000000
+  204 00000064 F501 5140       ADD              R1, R1 ,#0x3000
+  205 00000068 F101 0110       ADD              R1, R1 ,#0x10
+  206 0000006C 6001            STR              R1, [R0]
+  207 0000006E         
+  208 0000006E         ;RCC->CR&=~(1<<18)  HSEBYP清零,关闭外部晶振
+  209 0000006E 4859            LDR              R0, =RCC_BASE
+  210 00000070 F100 0000       ADD              R0, R0, #0x00 ;定位RCC_CR
+  211 00000074 6801            LDR              R1, [R0]
+  212 00000076 F421 2180       AND              R1, R1, #0xFFFBFFFF
+  213 0000007A 6001            STR              R1, [R0]
+  214 0000007C         
+  215 0000007C         ;RCC->CIR=0x00000000    禁止RCC时钟中断
+  216 0000007C 4855            LDR              R0, =RCC_BASE
+  217 0000007E F100 000C       ADD              R0, R0, #0x0C ;定位RCC_CIR
+  218 00000082 F04F 0100       MOV              R1, #0x00000000
+  219 00000086 6001            STR              R1, [R0]
+  220 00000088         
+
+
+
+ARM Macro Assembler    Page 9 
+
+
+  221 00000088         ;plln=100, pllm=8, pllp=2, pllq=4
+  222 00000088         ;RCC->CR|=1<<16     HSE 开启
+  223 00000088 4852            LDR              R0, =RCC_BASE
+  224 0000008A F100 0000       ADD              R0, R0, #0x00 ;定位RCC_CR
+  225 0000008E 6801            LDR              R1, [R0]
+  226 00000090 F441 3180       ORR              R1, R1, #0x10000
+  227 00000094 6001            STR              R1, [R0]
+  228 00000096         
+  229 00000096         ;等待HSE开启
+  230 00000096         
+  231 00000096         ;RCC->APB1ENR|=1<<28    电源接口时钟使能
+  232 00000096 484F            LDR              R0, =RCC_BASE
+  233 00000098 F100 0040       ADD              R0, R0, #0x40 
+                                                            ;定位RCC->APB1ENR
+                                                            
+  234 0000009C 6801            LDR              R1, [R0]
+  235 0000009E F041 5180       ORR              R1, R1, #0x10000000
+  236 000000A2 6001            STR              R1, [R0]
+  237 000000A4         
+  238 000000A4         ;PWR->CR|=3<<14     高性能模式,时钟可到100Mhz
+  239 000000A4 484C            LDR              R0, =PWR_BASE
+  240 000000A6 F100 0000       ADD              R0, R0, #0x00 ;定位PWR_CR
+  241 000000AA 6801            LDR              R1, [R0]
+  242 000000AC F441 4140       ORR              R1, R1, #0xC000
+  243 000000B0 6001            STR              R1, [R0]
+  244 000000B2         
+  245 000000B2         ;RCC->CFGR|=(0<<4)|(4<<10)|(0<<13)  HCLK 不分频;APB1 
+                       2分频;APB2 1分频
+  246 000000B2 4848            LDR              R0, =RCC_BASE
+  247 000000B4 F100 0008       ADD              R0, R0, #0x08 ;定位RCC_CFGR
+  248 000000B8 6801            LDR              R1, [R0]
+  249 000000BA F441 5180       ORR              R1, #0x1000
+  250 000000BE 6001            STR              R1, [R0]
+  251 000000C0         
+  252 000000C0         ;RCC->CR&=~(1<<24)  关闭主PLL
+  253 000000C0 4844            LDR              R0, =RCC_BASE
+  254 000000C2 F100 0000       ADD              R0, R0, #0x00 ;定位RCC_CR
+  255 000000C6 6801            LDR              R1, [R0]
+  256 000000C8 F021 7180       AND              R1, R1, #0xFEFFFFFF
+  257 000000CC 6001            STR              R1, [R0]
+  258 000000CE         
+  259 000000CE         ;RCC->PLLCFGR=8|(100<<6)|(((2>>1)-1)<<16)|(4<<24)|(1<<22
+                       )   配置主PLL,PLL时钟源来自HSE
+  260 000000CE 4841            LDR              R0, =RCC_BASE
+  261 000000D0 F100 0004       ADD              R0, R0, #0x04 
+                                                            ;定位RCC_PLLCFGR
+  262 000000D4 F04F 618C       MOV              R1, #0x04600000
+  263 000000D8 F101 0108       ADD              R1, R1, #0x08
+  264 000000DC F501 2180       ADD              R1, R1, #0x40000
+  265 000000E0 6001            STR              R1, [R0]
+  266 000000E2         
+  267 000000E2         ;RCC->CR|=1<<24 打开主PLL
+  268 000000E2 483C            LDR              R0, =RCC_BASE
+  269 000000E4 F100 0000       ADD              R0, R0, #0x00 ;定位RCC_CR
+  270 000000E8 6801            LDR              R1, [R0]
+  271 000000EA F041 7180       ORR              R1, R1, #0x1000000
+  272 000000EE 6001            STR              R1, [R0]
+  273 000000F0         
+  274 000000F0         ;FLASH->ACR|=1<<8   指令预取使能
+
+
+
+ARM Macro Assembler    Page 10 
+
+
+  275 000000F0         ;FLASH->ACR|=1<<9   指令cache使能.
+  276 000000F0         ;FLASH->ACR|=1<<10  数据cache使能.
+  277 000000F0         ;FLASH->ACR|=3<<0   4个CPU等待周期. 
+  278 000000F0 483A            LDR              R0, =FLASH
+  279 000000F2 F100 0000       ADD              R0, R0, #0x00 ;定位FLASH->ACR
+                                                            
+  280 000000F6 6801            LDR              R1, [R0]
+  281 000000F8 F04F 0200       MOV              R2, #0
+  282 000000FC F502 62E0       ADD              R2, R2, #0x700
+  283 00000100 F102 0203       ADD              R2, R2, #0x3
+  284 00000104 EA41 0102       ORR              R1, R1, R2
+  285 00000108 6001            STR              R1, [R0]
+  286 0000010A         
+  287 0000010A         ;RCC->CFGR&=~(3<<0) 清零
+  288 0000010A 4832            LDR              R0, =RCC_BASE
+  289 0000010C F100 0008       ADD              R0, R0, #0x08 ;定位RCC_CFGR
+  290 00000110 6801            LDR              R1, [R0]
+  291 00000112 F021 0103       AND              R1, #0xFFFFFFFC
+  292 00000116 6001            STR              R1, [R0]
+  293 00000118         
+  294 00000118         ;RCC->CFGR|=2<<0    选择主PLL作为系统时钟
+  295 00000118 482E            LDR              R0, =RCC_BASE
+  296 0000011A F100 0008       ADD              R0, R0, #0x08 ;定位RCC_CFGR
+  297 0000011E 6801            LDR              R1, [R0]
+  298 00000120 F041 0102       ORR              R1, #0x2
+  299 00000124 6001            STR              R1, [R0]
+  300 00000126         
+  301 00000126         ;等待PLL作为系统时钟
+  302 00000126         
+  303 00000126         ;初始化NVIC分组SCB->AIRCR [10:8]:000  复位位 000
+                       
+  304 00000126 482E            LDR              R0, =SCB_AIRCR
+  305 00000128 6801            LDR              R1, [R0]
+  306 0000012A F421 61E0       AND              R1, R1,#0xFFFFF8FF
+  307 0000012E 6001            STR              R1, [R0]
+  308 00000130         
+  309 00000130         ;初始化NVIC使能寄存器NVIC->ISER[0] [6]:1  复位
+                       位 全0
+  310 00000130 482C            LDR              R0, =NVIC_ISER0
+  311 00000132 6801            LDR              R1, [R0]
+  312 00000134 F041 0140       ORR              R1, R1,#(1<<6)
+  313 00000138 6001            STR              R1, [R0]
+  314 0000013A         
+  315 0000013A         ;初始化SysTick中断优先级
+  316 0000013A 482B            LDR              R0, =SCB_SHC
+  317 0000013C 6801            LDR              R1, [R0]
+  318 0000013E F04F 0100       MOV              R1, #0x0
+  319 00000142 6001            STR              R1, [R0]
+  320 00000144         
+  321 00000144 B662            CPSIE            I           ;开中断
+  322 00000146         
+  323 00000146 4770            BX               LR
+  324 00000148                 ENDP
+  325 00000148         
+  326 00000148         ;GPIO初始化
+  327 00000148         GPIOConfig
+                               PROC
+  328 00000148         ;开启GPIOC时钟
+  329 00000148 4822            LDR              R0, =RCC_BASE
+
+
+
+ARM Macro Assembler    Page 11 
+
+
+  330 0000014A F100 0030       ADD              R0, R0, #0x30 
+                                                            ;定位RCC_AHB1ENR
+  331 0000014E 6801            LDR              R1, [R0]
+  332 00000150 F041 0104       ORR              R1, R1, #0x4 ;GPIOC
+  333 00000154 6001            STR              R1, [R0]
+  334 00000156         
+  335 00000156         ;GPIOC_MODER设置为输出
+  336 00000156 4825            LDR              R0, =GPIOC_BASE
+  337 00000158 F100 0000       ADD              R0, R0, #0x00 ;定位到GPIOC_M
+                                                            ODER
+  338 0000015C 6801            LDR              R1, [R0]
+  339 0000015E F06F 6240       MVN              R2, #0xC000000
+  340 00000162 4411            ADD              R1, R1, r2
+  341 00000164 F041 6180       ORR              R1, R1, #0x4000000
+  342 00000168 6001            STR              R1, [R0]
+  343 0000016A         
+  344 0000016A         ;GPIOC_OTYPER设置为推挽输出
+  345 0000016A 4820            LDR              R0, =GPIOC_BASE
+  346 0000016C F100 0004       ADD              R0, R0, #0x04 ;定位到GPIOC_O
+                                                            TYPER
+  347 00000170 6801            LDR              R1, [R0]
+  348 00000172 F46F 5200       MVN              R2, #0x2000
+  349 00000176 4411            ADD              R1, R1, R2
+  350 00000178 F041 0100       ORR              R1, R1, #0x00
+  351 0000017C 6001            STR              R1, [R0]
+  352 0000017E         
+  353 0000017E         ;GPIOC_OSPEEDR设置为50hz
+  354 0000017E 481B            LDR              R0, =GPIOC_BASE
+  355 00000180 F100 0008       ADD              R0, R0, #0x08 ;定位到GPIOC_O
+                                                            SPEEDR
+  356 00000184 6801            LDR              R1, [R0]
+  357 00000186 F46F 5200       MVN              R2, #0x2000
+  358 0000018A 4411            ADD              R1, R1, R2
+  359 0000018C F041 6100       ORR              R1, R1, #0x8000000
+  360 00000190 6001            STR              R1, [R0]
+  361 00000192         
+  362 00000192         ;GPIOC_PUPDR设置为下拉
+  363 00000192 4816            LDR              R0, =GPIOC_BASE
+  364 00000194 F100 000C       ADD              R0, R0, #0x0C ;定位到GPIOC_P
+                                                            UPDR
+  365 00000198 6801            LDR              R1, [R0]
+  366 0000019A F46F 5200       MVN              R2, #0x2000
+  367 0000019E 4411            ADD              R1, R1, R2
+  368 000001A0 F041 6100       ORR              R1, R1, #0x8000000
+  369 000001A4 6001            STR              R1, [R0]
+  370 000001A6         
+  371 000001A6 4770            BX               LR
+  372 000001A8                 ENDP
+  373 000001A8         
+  374 000001A8         LEDOFF  PROC
+  375 000001A8                 EXPORT           LEDOFF
+  376 000001A8 4810            LDR              R0, =GPIOC_BASE
+  377 000001AA F100 0014       ADD              R0, R0, #0x14 ;定位GPIOC_ODR
+  378 000001AE 6801            LDR              R1, [R0]
+  379 000001B0 F441 5100       ORR              R1, R1, #(1<<13)
+  380 000001B4 6001            STR              R1, [R0]
+  381 000001B6         
+  382 000001B6 4770            BX               LR
+  383 000001B8                 ENDP
+
+
+
+ARM Macro Assembler    Page 12 
+
+
+  384 000001B8         
+  385 000001B8         LEDON   PROC
+  386 000001B8                 EXPORT           LEDON
+  387 000001B8 480C            LDR              R0, =GPIOC_BASE
+  388 000001BA F100 0014       ADD              R0, R0, #0x14 ;定位GPIOC_ODR
+  389 000001BE 6801            LDR              R1, [R0]
+  390 000001C0 F46F 5200       MVN              R2, #(1<<13)
+  391 000001C4 EA01 0102       AND              R1, R1, R2
+  392 000001C8 6001            STR              R1, [R0]
+  393 000001CA         
+  394 000001CA 4770            BX               LR
+  395 000001CC                 ENDP
+  396 000001CC         
+  397 000001CC                 ALIGN                        ;填充字节使地
+                                                            址对齐
+  398 000001CC                 END                          ;整个汇编文件
+                                                            结束
+              E000ED88 
+              00000000 
+              40023800 
+              40007000 
+              40023C00 
+              E000ED0C 
+              E000E100 
+              E000ED18 
+              40020800 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
+interwork --depend=.\objects\startup.d -o.\objects\startup.o -IC:\Keil_v5\ARM\P
+ACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include -IC:\Ke
+il_v5\ARM\CMSIS\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISION_
+VERSION SETA 532" --predefine="STM32F411xE SETA 1" --list=.\listings\startup.ls
+t ..\BSP\startup.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+STACK 00000000
+
+Symbol: STACK
+   Definitions
+      At line 14 in file ..\BSP\startup.s
+   Uses
+      None
+Comment: STACK unused
+Stack_Mem 00000000
+
+Symbol: Stack_Mem
+   Definitions
+      At line 15 in file ..\BSP\startup.s
+   Uses
+      None
+Comment: Stack_Mem unused
+__initial_sp 00000400
+
+Symbol: __initial_sp
+   Definitions
+      At line 16 in file ..\BSP\startup.s
+   Uses
+      At line 31 in file ..\BSP\startup.s
+      At line 167 in file ..\BSP\startup.s
+
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+HEAP 00000000
+
+Symbol: HEAP
+   Definitions
+      At line 19 in file ..\BSP\startup.s
+   Uses
+      None
+Comment: HEAP unused
+Heap_Mem 00000000
+
+Symbol: Heap_Mem
+   Definitions
+      At line 21 in file ..\BSP\startup.s
+   Uses
+      None
+Comment: Heap_Mem unused
+__heap_base 00000000
+
+Symbol: __heap_base
+   Definitions
+      At line 20 in file ..\BSP\startup.s
+   Uses
+      At line 168 in file ..\BSP\startup.s
+Comment: __heap_base used once
+__heap_limit 00000200
+
+Symbol: __heap_limit
+   Definitions
+      At line 22 in file ..\BSP\startup.s
+   Uses
+      At line 169 in file ..\BSP\startup.s
+Comment: __heap_limit used once
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+RESET 00000000
+
+Symbol: RESET
+   Definitions
+      At line 27 in file ..\BSP\startup.s
+   Uses
+      None
+Comment: RESET unused
+__Vectors 00000000
+
+Symbol: __Vectors
+   Definitions
+      At line 31 in file ..\BSP\startup.s
+   Uses
+      At line 28 in file ..\BSP\startup.s
+      At line 136 in file ..\BSP\startup.s
+
+__Vectors_End 00000198
+
+Symbol: __Vectors_End
+   Definitions
+      At line 135 in file ..\BSP\startup.s
+   Uses
+      At line 29 in file ..\BSP\startup.s
+      At line 136 in file ..\BSP\startup.s
+
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 138 in file ..\BSP\startup.s
+   Uses
+      None
+Comment: .text unused
+GPIOConfig 00000148
+
+Symbol: GPIOConfig
+   Definitions
+      At line 327 in file ..\BSP\startup.s
+   Uses
+      At line 149 in file ..\BSP\startup.s
+Comment: GPIOConfig used once
+LEDOFF 000001A8
+
+Symbol: LEDOFF
+   Definitions
+      At line 374 in file ..\BSP\startup.s
+   Uses
+      At line 375 in file ..\BSP\startup.s
+Comment: LEDOFF used once
+LEDON 000001B8
+
+Symbol: LEDON
+   Definitions
+      At line 385 in file ..\BSP\startup.s
+   Uses
+      At line 386 in file ..\BSP\startup.s
+Comment: LEDON used once
+PendSV_Handler 00000018
+
+Symbol: PendSV_Handler
+   Definitions
+      At line 158 in file ..\BSP\startup.s
+   Uses
+      At line 45 in file ..\BSP\startup.s
+      At line 159 in file ..\BSP\startup.s
+
+Reset_Handler 00000000
+
+Symbol: Reset_Handler
+   Definitions
+      At line 141 in file ..\BSP\startup.s
+   Uses
+      At line 32 in file ..\BSP\startup.s
+      At line 142 in file ..\BSP\startup.s
+
+SVC_Handler 00000016
+
+Symbol: SVC_Handler
+   Definitions
+      At line 154 in file ..\BSP\startup.s
+   Uses
+      At line 42 in file ..\BSP\startup.s
+      At line 155 in file ..\BSP\startup.s
+
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+SysTickConfig 0000001C
+
+Symbol: SysTickConfig
+   Definitions
+      At line 172 in file ..\BSP\startup.s
+   Uses
+      At line 148 in file ..\BSP\startup.s
+Comment: SysTickConfig used once
+SysTick_Handler 0000001A
+
+Symbol: SysTick_Handler
+   Definitions
+      At line 162 in file ..\BSP\startup.s
+   Uses
+      At line 46 in file ..\BSP\startup.s
+      At line 163 in file ..\BSP\startup.s
+
+9 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+FLASH 40023C00
+
+Symbol: FLASH
+   Definitions
+      At line 5 in file ..\BSP\startup.s
+   Uses
+      At line 278 in file ..\BSP\startup.s
+Comment: FLASH used once
+GPIOC_BASE 40020800
+
+Symbol: GPIOC_BASE
+   Definitions
+      At line 6 in file ..\BSP\startup.s
+   Uses
+      At line 11 in file ..\BSP\startup.s
+      At line 336 in file ..\BSP\startup.s
+      At line 345 in file ..\BSP\startup.s
+      At line 354 in file ..\BSP\startup.s
+      At line 363 in file ..\BSP\startup.s
+      At line 376 in file ..\BSP\startup.s
+      At line 387 in file ..\BSP\startup.s
+
+Heap_Size 00000200
+
+Symbol: Heap_Size
+   Definitions
+      At line 2 in file ..\BSP\startup.s
+   Uses
+      At line 21 in file ..\BSP\startup.s
+Comment: Heap_Size used once
+NVIC_ISER0 E000E100
+
+Symbol: NVIC_ISER0
+   Definitions
+      At line 9 in file ..\BSP\startup.s
+   Uses
+      At line 310 in file ..\BSP\startup.s
+Comment: NVIC_ISER0 used once
+PWR_BASE 40007000
+
+Symbol: PWR_BASE
+   Definitions
+      At line 4 in file ..\BSP\startup.s
+   Uses
+      At line 239 in file ..\BSP\startup.s
+Comment: PWR_BASE used once
+RCC_BASE 40023800
+
+Symbol: RCC_BASE
+   Definitions
+      At line 3 in file ..\BSP\startup.s
+   Uses
+      At line 176 in file ..\BSP\startup.s
+      At line 183 in file ..\BSP\startup.s
+      At line 189 in file ..\BSP\startup.s
+      At line 201 in file ..\BSP\startup.s
+      At line 209 in file ..\BSP\startup.s
+      At line 216 in file ..\BSP\startup.s
+      At line 223 in file ..\BSP\startup.s
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 232 in file ..\BSP\startup.s
+      At line 246 in file ..\BSP\startup.s
+      At line 253 in file ..\BSP\startup.s
+      At line 260 in file ..\BSP\startup.s
+      At line 268 in file ..\BSP\startup.s
+      At line 288 in file ..\BSP\startup.s
+      At line 295 in file ..\BSP\startup.s
+      At line 329 in file ..\BSP\startup.s
+
+SCB_AIRCR E000ED0C
+
+Symbol: SCB_AIRCR
+   Definitions
+      At line 7 in file ..\BSP\startup.s
+   Uses
+      At line 304 in file ..\BSP\startup.s
+Comment: SCB_AIRCR used once
+SCB_SHC E000ED18
+
+Symbol: SCB_SHC
+   Definitions
+      At line 8 in file ..\BSP\startup.s
+   Uses
+      At line 316 in file ..\BSP\startup.s
+Comment: SCB_SHC used once
+Stack_Size 00000400
+
+Symbol: Stack_Size
+   Definitions
+      At line 1 in file ..\BSP\startup.s
+   Uses
+      At line 15 in file ..\BSP\startup.s
+Comment: Stack_Size used once
+__Vectors_Size 00000198
+
+Symbol: __Vectors_Size
+   Definitions
+      At line 136 in file ..\BSP\startup.s
+   Uses
+      At line 30 in file ..\BSP\startup.s
+Comment: __Vectors_Size used once
+10 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+__main 00000000
+
+Symbol: __main
+   Definitions
+      At line 143 in file ..\BSP\startup.s
+   Uses
+      At line 150 in file ..\BSP\startup.s
+Comment: __main used once
+1 symbol
+366 symbols in table

@@ -1,5 +1,3 @@
-
-
 Stack_Size      EQU     0x00000400 ;定义主栈大小
 Heap_Size       EQU     0x00000200 ;定义堆大小
 RCC_BASE        EQU     0x40023800  ;RCC寄存器基址
@@ -9,6 +7,8 @@ GPIOC_BASE      EQU     0x40020800  ;GPIOC寄存器基地址
 SCB_AIRCR       EQU     0xE000ED0C  ;中断控制寄存器
 SCB_SHC	    	EQU		0xE000ED18  ;系统中断寄存器
 NVIC_ISER0      EQU     0xE000E100  ;中断使能寄存器
+	
+				EXPORT	GPIOC_BASE
 
 ;开辟栈空间
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3 ;定义栈空间，不初始化（全0），可读可写，八字节对齐
@@ -145,14 +145,31 @@ Reset_Handler   PROC
                 LDR     R1,[R0]
                 ORR     R1,R1,#(0xF << 20)
                 STR     R1,[R0]
-                BL      SysTickConfig
+                BL      SysTickConfig				
                 BL      GPIOConfig
                 LDR     R0, =__main
                 BX      R0
                 ENDP
-
+				
+SVC_Handler     PROC
+                EXPORT  SVC_Handler                [WEAK]
+                B       .
+                ENDP					
+PendSV_Handler  PROC
+                EXPORT  PendSV_Handler             [WEAK]
+                B       .
+                ENDP
+SysTick_Handler PROC
+                EXPORT  SysTick_Handler            [WEAK]
+                B       .
+                ENDP
+					
+				EXPORT  __initial_sp
+                EXPORT  __heap_base
+                EXPORT  __heap_limit
+					
 ;时钟初始化，提供100MHz SysTick
-SysTickConfig
+SysTickConfig   PROC
                 CPSID I ;关中断
 
                 ;RCC->CR|=0x00000001    设置HISON,开启内部高速RC振荡
@@ -172,13 +189,20 @@ SysTickConfig
                 LDR R0, =RCC_BASE
                 ADD R0, R0, #0x00 ;定位RCC_CR
                 LDR R1, [R0]
-                AND R1, R1, #0xFEF6FFFF
+				MOV R2, #0
+                ADD R2, R2, #0xFE000000
+				ADD R2, R2, #0xF60000
+				ADD R2, R2, #0xFF00
+				ADD R2, R2, #0xFF
+				AND R1, R1, R2
                 STR R1, [R0]
 
                 ;RCC->PLLCFGR=0x24003010    PLLCFGR恢复复位值
                 LDR R0, =RCC_BASE
                 ADD R0, R0, #0x04 ;定位RCC_PLLCFGR
-                MOV R1, #0x24003010
+                MOV R1, #0x24000000
+				ADD R1, R1 ,#0x3000
+				ADD R1, R1 ,#0x10
                 STR R1, [R0]
 
                 ;RCC->CR&=~(1<<18)  HSEBYP清零,关闭外部晶振
@@ -235,7 +259,9 @@ SysTickConfig
                 ;RCC->PLLCFGR=8|(100<<6)|(((2>>1)-1)<<16)|(4<<24)|(1<<22)   配置主PLL,PLL时钟源来自HSE
                 LDR R0, =RCC_BASE
                 ADD R0, R0, #0x04 ;定位RCC_PLLCFGR
-                MOV R1, #0x04640008
+                MOV R1, #0x04600000
+				ADD R1, R1, #0x08
+				ADD R1, R1, #0x40000
                 STR R1, [R0]
 
                 ;RCC->CR|=1<<24 打开主PLL
@@ -252,7 +278,10 @@ SysTickConfig
                 LDR R0, =FLASH
                 ADD R0, R0, #0x00 ;定位FLASH->ACR
                 LDR R1, [R0]
-                ORR R1, R1, #0x703
+				MOV R2, #0
+				ADD R2, R2, #0x700
+				ADD R2, R2, #0x3
+                ORR R1, R1, R2
                 STR R1, [R0]
 
                 ;RCC->CFGR&=~(3<<0) 清零
@@ -286,15 +315,16 @@ SysTickConfig
                 ;初始化SysTick中断优先级
 				LDR R0, =SCB_SHC
 				LDR R1, [R0]
-				MOV R1, #x0
+				MOV R1, #0x0
 				STR R1, [R0]
 
                 CPSIE I ;开中断
 
                 BX LR
+				ENDP
 
 ;GPIO初始化
-GPIOConfig
+GPIOConfig      PROC
                 ;开启GPIOC时钟
                 LDR R0, =RCC_BASE
                 ADD R0, R0, #0x30   ;定位RCC_AHB1ENR
@@ -306,7 +336,8 @@ GPIOConfig
                 LDR R0, =GPIOC_BASE
                 ADD R0, R0, #0x00   ;定位到GPIOC_MODER
                 LDR R1, [R0]
-                ADD R1, R1, #0xF3FFFFFF
+				MVN R2, #0xC000000
+                ADD R1, R1, r2
                 ORR R1, R1, #0x4000000
                 STR R1, [R0]
 
@@ -314,7 +345,8 @@ GPIOConfig
                 LDR R0, =GPIOC_BASE
                 ADD R0, R0, #0x04   ;定位到GPIOC_OTYPER
                 LDR R1, [R0]
-                ADD R1, R1, #0xFFFFDFFF
+				MVN R2, #0x2000
+                ADD R1, R1, R2
                 ORR R1, R1, #0x00
                 STR R1, [R0]
 
@@ -322,7 +354,8 @@ GPIOConfig
                 LDR R0, =GPIOC_BASE
                 ADD R0, R0, #0x08   ;定位到GPIOC_OSPEEDR
                 LDR R1, [R0]
-                ADD R1, R1, #0xF3FFFFFF
+                MVN R2, #0x2000
+                ADD R1, R1, R2
                 ORR R1, R1, #0x8000000
                 STR R1, [R0]
 
@@ -330,18 +363,37 @@ GPIOConfig
                 LDR R0, =GPIOC_BASE
                 ADD R0, R0, #0x0C   ;定位到GPIOC_PUPDR
                 LDR R1, [R0]
-                ADD R1, R1, #0xF3FFFFFF
+                MVN R2, #0x2000
+                ADD R1, R1, R2
                 ORR R1, R1, #0x8000000
                 STR R1, [R0]
 
                 BX LR
+				ENDP
+
+LEDOFF			PROC
+				EXPORT LEDOFF                                                                                                                                                                                                                                                                                                                                                   
+				LDR R0, =GPIOC_BASE
+                ADD R0, R0, #0x14   ;定位GPIOC_ODR
+                LDR R1, [R0]
+				ORR  R1, R1, #(1<<13)
+			    STR R1, [R0]
+
+				BX LR
+				ENDP
+
+LEDON			PROC
+				EXPORT	LEDON
+				LDR R0, =GPIOC_BASE
+                ADD R0, R0, #0x14   ;定位GPIOC_ODR
+                LDR R1, [R0]
+				MVN R2, #(1<<13)
+				AND R1, R1, R2 
+			    STR R1, [R0]
+
+				BX LR
+				ENDP
 				
 				ALIGN 								;填充字节使地址对齐
                 END									;整个汇编文件结束
-
-
-                
-
-
-
-
+				
